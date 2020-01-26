@@ -1,7 +1,7 @@
 from spell_tree import Tree, two_handed_spell
 import glossary
 
-class Player():
+class Wizard():
     def __init__(self, name='Player 1'):
         # inputmethod
         self.gestureHistory = [[], []]
