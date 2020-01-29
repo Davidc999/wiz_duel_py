@@ -22,20 +22,32 @@ class Wizard():
             self.gestureHistory[gestnum] = self.gestureHistory[gestnum][-8:]
         spells_cast = self.update_tree(gestures)
 
+        #TODO: This should eventually return a PlayerMove object, or some such thing.
+
         # Handle surrender
         if 'surrender' in spells_cast[0]:
             surrender = True
-            for set in spells_cast:
-                set.remove('surrender')
+            for list in spells_cast:
+                list.remove('surrender')
 
+        #TODO: Complete handle conflict logic. It should pick the spell to cast for this hand and dump the rest.
         # Handle conflicts:
-        for set_num, set in enumerate(spells_cast):
-            if(len(set) > 1):
-                print('{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[set_num].capitalize()))
-                for num, spell in enumerate(set):
+        final_spells_cast = []
+        for list_num, list in enumerate(spells_cast):
+            if(len(list) > 1):
+                print('{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()))
+                for num, spell in enumerate(list):
                     if spell in two_handed_spell:
                         spell += ' (two-handed)'
                     print('{}. {}'.format(num+1, spell))
+                selection = input()
+                final_spells_cast.append([list[selection-1]])
+            else:
+                final_spells_cast.append(list)
+
+        return final_spells_cast
+
+
 
 
 

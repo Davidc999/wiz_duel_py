@@ -1,4 +1,4 @@
 class GameState():
-    players = []
+    wizards = []
     entities = []
     global_status = []
