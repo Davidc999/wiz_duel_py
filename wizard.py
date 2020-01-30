@@ -1,17 +1,20 @@
 from spell_tree import Tree, two_handed_spell
+from player_base import PlayerBase
 import glossary
 
 class Wizard():
-    def __init__(self, name='Player 1'):
+    def __init__(self, controlling_player: PlayerBase, name='Player 1'):
         # inputmethod
         self.gestureHistory = [[], []]
         self.spellTrees = [Tree(), Tree()]
         self.cast_lightning_short = False
         self.name = name
         self.hp = 15
+        self.controlling_player = controlling_player
 
     def get_gestures(self):
-        gestures = [x.strip(' ').upper() for x in input('Please enter you next move <L, R>:\n').split(',')]
+        player_gest = self.controlling_player.get_input('Please enter you next move <L, R>:\n')
+        gestures = player_gest.upper().replace(" ", "").split(',')
         return gestures
 
     def execute_gestures(self, gestures):

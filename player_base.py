@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 class PlayerBase(ABC):
 
     @abstractmethod
-    def get_move(self):
+    def get_input(self, prompt):
         pass
 
     @abstractmethod
