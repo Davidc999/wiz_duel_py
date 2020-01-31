@@ -7,5 +7,5 @@ class PlayerBase(ABC):
         pass
 
     @abstractmethod
-    def print(self):
+    def print(self, prompt):
         pass

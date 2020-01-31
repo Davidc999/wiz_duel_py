@@ -4,8 +4,10 @@ import sys
 from _thread import *
 import time
 from wizard import Wizard
+from game_state import GameState
+from remote_player import RemotePlayer
 
-list_of_players = []
+game_state = GameState()
 def main():
     """The first argument AF_INET is the address domain of the
     socket. This is used when we have an Internet Domain with
@@ -55,25 +57,15 @@ def main():
     server.close()
 
 def init_new_player(conn):
-    conn.send("Welcome to Wizard duel!\nWhat is your name?".encode())
-    conn.send("\\input?".encode())
-    name = conn.recv(2048).decode()
-    list_of_players.append({'conn': conn, 'wizard': Wizard(name)})
-    print("{} Has joined the game!".format(name))
+    game_state.wizards.append(Wizard(RemotePlayer(conn)))
+    print("{} Has joined the game!".format(game_state.wizards[-1].name))
 
 
 def run_demo():
     while True:
-        for player_dict in list_of_players:
-            wiz = player_dict['wizard']
-            conn = player_dict['conn']
-            conn.send("{}, enter your gestures as L, R:".format(wiz.name).encode())
-            conn.send("\\input?".encode())
-            player_gest = conn.recv(2048).decode()
-            gest_list = [x.strip(' ').upper() for x in player_gest.split(',')]
-            spells_cast = wiz.execute_gestures(gest_list)
-            print("{} has cast {}".format(wiz.name, spells_cast))
-            conn.send("You've cast {}".format(wiz.name, spells_cast).encode())
+        for wiz in game_state.wizards:
+            wiz: Wizard
+            print(wiz.play_turn())
 
 
 

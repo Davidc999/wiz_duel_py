@@ -29,7 +29,7 @@ def handle_incoming(msg):
         usr_input = input()
         server.send(usr_input.encode())
     else:
-        print(msg)
+        print(msg.strip())
 
 def listen_thread(conn):
     while True:
