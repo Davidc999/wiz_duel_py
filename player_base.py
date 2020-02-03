@@ -1,16 +1,18 @@
 from abc import ABC, abstractmethod
 import glossary
 
-class PlayerBase(ABC):
 
-    def retry_fail(self, func):
-        def inner(*args, **kwargs):
-            while True:
-                ans = func(*args, **kwargs)
-                if ans:
-                    return ans
-                self.print("There was a problem with the input. Please try again.")
-        return inner
+def retry_fail(func):
+    def inner(self, *args, **kwargs):
+        while True:
+            ans = func(self, *args, **kwargs)
+            if ans:
+                return ans
+            self.print("There was a problem with the input. Please try again.")
+
+    return inner
+
+class PlayerBase(ABC):
 
     def verify_gestures(self, gest, num):
         if len(gest) != num:
@@ -27,6 +29,7 @@ class PlayerBase(ABC):
     @retry_fail
     def get_gestures(self, prompt, num):
         gest = self.get_input(prompt)
+        gest = [x.strip().upper() for x in gest.split(',')]
         return self.verify_gestures(gest, num)
 
     @retry_fail

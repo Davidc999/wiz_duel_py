@@ -16,18 +16,10 @@ class Wizard(Entity):
         super(Wizard, self).__init__(15, name)
 
     def play_turn(self, entities: list):
-        gest = self.get_gestures()
-        while not self.validate_gesture_input(gest):
-            self.controlling_player.print("There has been a problem processing your input. Please try again.")
-            gest = self.get_gestures()
+        gest = self.controlling_player.get_gestures('Please enter you next move <L, R>:', 2)
         wizard_turn = self.execute_gestures(gest)
-        self.select_targets(wizard_turn)
+        self.select_targets(wizard_turn, entities)
         return wizard_turn
-
-    def get_gestures(self):
-        player_gest = self.controlling_player.get_input('Please enter you next move <L, R>:')
-        gestures = player_gest.upper().replace(" ", "").split(',')
-        return gestures
 
     def execute_gestures(self, gestures: list):
         gestures = self._validate_gestures(gestures)
@@ -42,10 +34,10 @@ class Wizard(Entity):
 
         # Handle surrender
         surrender = False
-        if 'surrender' in spells_cast[0]:
+        if 'Surrender' in spells_cast[0]:
             surrender = True
             for spell_list in spells_cast:
-                spell_list.remove('surrender')
+                spell_list.remove('Surrender')
 
         # Handle conflicts:
         final_spells_cast = []
@@ -101,10 +93,10 @@ class Wizard(Entity):
         return gestures
 
     def select_targets(self, wiz_turn: WizardTurn, entities: list):
-        for spell in wiz_turn.spell_cast_list:
-            spell.set_target(
+        for spell_cast_obj in wiz_turn.spell_cast_list:
+            spell_cast_obj.set_target(
                 self.controlling_player.get_list_item(
-                    "Select a target for {}:".format(spell[0]),
+                    "Select a target for {}:".format(spell_cast_obj.spell),
                     entities
                 )
             )
