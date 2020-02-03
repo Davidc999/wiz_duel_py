@@ -57,15 +57,16 @@ def main():
     server.close()
 
 def init_new_player(conn):
-    game_state.wizards.append(Wizard(RemotePlayer(conn)))
-    print("{} Has joined the game!".format(game_state.wizards[-1].name))
+    new_wiz = Wizard(RemotePlayer(conn))
+    game_state.wizards.append(new_wiz)
+    game_state.entities.append(new_wiz)
+    print("{} Has joined the game!".format(new_wiz.name))
 
 
 def run_demo():
     while True:
         for wiz in game_state.wizards:
-            wiz: Wizard
-            print(wiz.play_turn())
+            print(wiz.play_turn(game_state.entities))
 
 
 

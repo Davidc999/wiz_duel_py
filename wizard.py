@@ -1,7 +1,8 @@
 from spell_tree import Tree, two_handed_spell
 from player_base import PlayerBase
 import glossary
-from wizard_turn import WizardTurn
+from wizard_turn import WizardTurn, SpellCast
+from entity import Entity
 
 
 class Wizard(Entity):
@@ -14,22 +15,14 @@ class Wizard(Entity):
         name = self.controlling_player.get_input('What\'s you\'re name?')
         super(Wizard, self).__init__(15, name)
 
-    # TODO: Maybe this doesn't belong in this class?
-    def validate_gesture_input(self, gest, length: int = 2) -> bool:
-        if len(gest) != length:
-            return False
-        if any([x.lower() not in glossary.GESTURES for x in gest]):
-            return False
-        return True
-
     def play_turn(self, entities: list):
         gest = self.get_gestures()
         while not self.validate_gesture_input(gest):
             self.controlling_player.print("There has been a problem processing your input. Please try again.")
             gest = self.get_gestures()
-        spells_cast, surrender = self.execute_gestures(gest)
-        select_targets(spells_cast)
-        return WizardTurn(spells_cast, surrender, self)
+        wizard_turn = self.execute_gestures(gest)
+        self.select_targets(wizard_turn)
+        return wizard_turn
 
     def get_gestures(self):
         player_gest = self.controlling_player.get_input('Please enter you next move <L, R>:')
@@ -39,36 +32,45 @@ class Wizard(Entity):
     def execute_gestures(self, gestures: list):
         gestures = self._validate_gestures(gestures)
 
+        # Record gestures in Wizard's personal history.
         for gestnum in range(len(self.gestureHistory)):
             self.gestureHistory[gestnum].append(gestures[gestnum])
-            self.gestureHistory[gestnum] = self.gestureHistory[gestnum][-8:]
+            # TODO: Remember that we only care about the last 8 gestures for any spell.
+            # So keep record, but no need to display more than that later on.
+            #self.gestureHistory[gestnum] = self.gestureHistory[gestnum][-8:]
         spells_cast = self.update_tree(gestures)
 
         # Handle surrender
+        surrender = False
         if 'surrender' in spells_cast[0]:
             surrender = True
-            for list in spells_cast:
-                list.remove('surrender')
+            for spell_list in spells_cast:
+                spell_list.remove('surrender')
 
         # Handle conflicts:
         final_spells_cast = []
-        for list_num, list in enumerate(spells_cast):
-            if(len(list) > 1):
+        for list_num, spell_list in enumerate(spells_cast):
+            if len(spell_list) > 1:
+                selected_spell = self.controlling_player.get_list_item(
+                    '{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()),
+                    [spell + ' (two handed)' if spell in two_handed_spell else spell for spell in spell_list]
+                )
+                '''
                 self.controlling_player.print('{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()))
-                for num, spell in enumerate(list):
+                for num, spell in enumerate(spell_list):
                     if spell in two_handed_spell:
                         spell += ' (two-handed)'
                     self.controlling_player.print('{}. {}'.format(num+1, spell))
                 selection = int(self.controlling_player.get_input(""))
-                selected_spell = list[selection-1]
+                selected_spell = spell_list[selection-1]'''
                 final_spells_cast.append([selected_spell])
-                if selected_spell in two_handed_spell: # Both hands are casting same spell, so return
+                if selected_spell in two_handed_spell:  # Both hands are casting same spell, so return
                     final_spells_cast.append([selected_spell])
                     return final_spells_cast
             else:
-                final_spells_cast.append(list)
-
-        return final_spells_cast, surrender
+                final_spells_cast.append(spell_list)
+        return WizardTurn(final_spells_cast, surrender, self)
+        #return final_spells_cast, surrender
 
     def update_tree(self, gestures: list):
         spellscast = []
@@ -98,22 +100,23 @@ class Wizard(Entity):
             gestures[1] = gestures[1].lower()
         return gestures
 
-    def select_targers(self, spells_cast: list, entities: list):
-        target_list = []
-        for spell in spells_cast:
-            if spell:
-                self.controlling_player.print("Select a target for {}:".format(spell[0]))
-                for num, spell in enumerate(entities):
-                    self.controlling_player.print('{}. {}'.format(num+1, spell))
-                selection = int(self.controlling_player.get_input(""))
+    def select_targets(self, wiz_turn: WizardTurn, entities: list):
+        for spell in wiz_turn.spell_cast_list:
+            spell.set_target(
+                self.controlling_player.get_list_item(
+                    "Select a target for {}:".format(spell[0]),
+                    entities
+                )
+            )
+            '''self.controlling_player.print("Select a target for {}:".format(spell[0]))
+            for num, spell in enumerate(entities):
+                self.controlling_player.print('{}. {}'.format(num+1, spell))
+            selection = int(self.controlling_player.get_input(""))
+            target_list.append([list[selection-1]])
+            # Handle two-handed:
+            if spell in two_handed_spell:
                 target_list.append([list[selection-1]])
-                # Handle two-handed:
-                if spell in two_handed_spell:
-                    target_list.append([list[selection-1]])
-                    return target_list
-            else:
-                target_list.append([])
-        return target_list
+                return target_list'''
 
 
 
