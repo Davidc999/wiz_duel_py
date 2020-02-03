@@ -8,7 +8,7 @@ class RemotePlayer(PlayerBase):
         msg = prompt + '\n'
         self._conn.send(msg.encode())
 
-    def get_input(self, prompt):
+    def _get_input(self, prompt):
         msg = prompt + '\\input?'
         self._conn.send(msg.encode())
         return self._conn.recv(2048).decode()
