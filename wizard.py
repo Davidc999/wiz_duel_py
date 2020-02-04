@@ -6,6 +6,8 @@ from entity import Entity
 
 
 class Wizard(Entity):
+    # TODO: Whenever we have a list of list for spells on each hand, have a dictionary with{'left': [], 'right':[]}
+    # TODO: Same for the list of hands
     def __init__(self, controlling_player: PlayerBase):
         self.gestureHistory = [[], []]
         self.spellTrees = [Tree(), Tree()]
@@ -34,10 +36,10 @@ class Wizard(Entity):
 
         # Handle surrender
         surrender = False
-        if 'Surrender' in spells_cast[0]:
+        if glossary.SURRENDER in spells_cast[0]:
             surrender = True
             for spell_list in spells_cast:
-                spell_list.remove('Surrender')
+                spell_list.remove(glossary.SURRENDER)
 
         # Handle conflicts:
         final_spells_cast = []
@@ -47,14 +49,6 @@ class Wizard(Entity):
                     '{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()),
                     [spell + ' (two handed)' if spell in two_handed_spell else spell for spell in spell_list]
                 )
-                '''
-                self.controlling_player.print('{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()))
-                for num, spell in enumerate(spell_list):
-                    if spell in two_handed_spell:
-                        spell += ' (two-handed)'
-                    self.controlling_player.print('{}. {}'.format(num+1, spell))
-                selection = int(self.controlling_player.get_input(""))
-                selected_spell = spell_list[selection-1]'''
                 final_spells_cast.append([selected_spell])
                 if selected_spell in two_handed_spell:  # Both hands are casting same spell, so return
                     final_spells_cast.append([selected_spell])
@@ -100,15 +94,7 @@ class Wizard(Entity):
                     entities
                 )
             )
-            '''self.controlling_player.print("Select a target for {}:".format(spell[0]))
-            for num, spell in enumerate(entities):
-                self.controlling_player.print('{}. {}'.format(num+1, spell))
-            selection = int(self.controlling_player.get_input(""))
-            target_list.append([list[selection-1]])
-            # Handle two-handed:
-            if spell in two_handed_spell:
-                target_list.append([list[selection-1]])
-                return target_list'''
+
 
 
 

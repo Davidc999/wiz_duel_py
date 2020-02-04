@@ -26,7 +26,7 @@ class WizardTurn:
     def construct_spell_cast_list(self, spell_list, caster):
         spell_cast_list = []
         if spell_list[0] and spell_list[0][0] in two_handed_spell:
-            spell_cast_list.append(SpellCast(spell_list[0], 'both', caster))
+            spell_cast_list.append(SpellCast(spell_list[0], 'both', caster)) # Rather than both use 'left and right'. This could allow us to potentially add hands XD
         else:
             for num, spell in enumerate(spell_list):
                 if spell:
