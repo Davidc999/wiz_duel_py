@@ -60,7 +60,7 @@ def init_new_player(conn):
     new_wiz = Wizard(RemotePlayer(conn))
     game_state.wizards.append(new_wiz)
     game_state.entities.append(new_wiz)
-    print("{} Has joined the game!".format(new_wiz.name))
+    print("{} has joined the game!".format(new_wiz.name))
 
 
 def run_demo():

@@ -36,7 +36,7 @@ class Tree():
         # TODO: (Maybe not here) handle double handed spells occupying both hands.
         # TODO: Handle surrender. It's not a spell, from the rules it looks like it might be 'cast' with other spells!
         #  So the wizard may actually win before he surrenders!
-        spells_completed = []
+        spells_completed = set()
         new_state = [self.root]
         self.prev_state = self.state
         # Advance current spells
@@ -50,7 +50,7 @@ class Tree():
         # Check if a spell has been cast
         for curr_spell in new_state:
             if curr_spell.spell_cast:
-                spells_completed.append(curr_spell.spell_cast)
+                spells_completed.add(curr_spell.spell_cast)
         # Update state:
         self.state = new_state
         return spells_completed

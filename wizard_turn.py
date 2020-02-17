@@ -18,19 +18,18 @@ class SpellCast:
 
 
 class WizardTurn:
-    def __init__(self, spell_list: list, surrender: bool, caster):
+    def __init__(self, spell_list: dict, surrender: bool, caster):
         self.surrender = surrender
         self.spell_cast_list = []
         self.spell_cast_list = self.construct_spell_cast_list(spell_list, caster)
 
-    def construct_spell_cast_list(self, spell_list, caster):
+    def construct_spell_cast_list(self, spell_dict, caster):
         spell_cast_list = []
-        if spell_list[0] and spell_list[0][0] in two_handed_spell:
-            spell_cast_list.append(SpellCast(spell_list[0], 'both', caster)) # Rather than both use 'left and right'. This could allow us to potentially add hands XD
-        else:
-            for num, spell in enumerate(spell_list):
-                if spell:
-                    spell_cast_list.append(SpellCast(spell, glossary.HAND_NAMES[num], caster))
+        for hand, spell in spell_dict.items():
+            if spell in two_handed_spell:  # Handle two-handed spells
+                spell_cast_list.append(SpellCast(spell, '+'.join(glossary.HAND_NAMES), caster))
+                break
+            spell_cast_list.append(SpellCast(spell, hand, caster))
 
         return spell_cast_list
 
@@ -40,5 +39,5 @@ class WizardTurn:
             string = string+ "\n" + str(spell)
         string = string + ">"
         return string
-# TODO: Make this instead a list of spellUnits + surrender boolean
+
 # Spellunit = {Spell, hand, caster, target) Maye it'd be cool for it to be able to describe itself?
