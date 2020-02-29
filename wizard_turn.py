@@ -26,7 +26,7 @@ class WizardTurn:
     def construct_spell_cast_list(self, spell_dict, caster):
         spell_cast_list = []
         for hand, spell in spell_dict.items():
-            if spell in two_handed_spell:  # Handle two-handed spells
+            if spell.is_two_handed:  # Handle two-handed spells
                 spell_cast_list.append(SpellCast(spell, '+'.join(glossary.HAND_NAMES), caster))
                 break
             spell_cast_list.append(SpellCast(spell, hand, caster))

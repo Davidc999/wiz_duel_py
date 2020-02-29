@@ -1,8 +1,9 @@
-from spell_tree import Tree, two_handed_spell
+from spell_tree import Tree
 from player_base import PlayerBase
 import glossary
 from wizard_turn import WizardTurn, SpellCast
 from entity import Entity
+from spell_library import SURRENDER
 
 
 class Wizard(Entity):
@@ -50,10 +51,10 @@ class Wizard(Entity):
 
         # Handle surrender
         surrender = False
-        if glossary.SURRENDER in spells_cast[glossary.HAND_NAMES[0]]:
+        if SURRENDER in spells_cast[glossary.HAND_NAMES[0]]:
             surrender = True
             for _, spell_set in spells_cast.items():
-                spell_set.remove(glossary.SURRENDER)
+                spell_set.remove(SURRENDER)
 
         # Handle conflicts:
         final_spells_cast = {}
@@ -61,10 +62,10 @@ class Wizard(Entity):
             if len(spell_set) > 1:
                 selected_spell = self.controlling_player.get_list_item(
                     '{} hand has completed multiple spells. Choose one:'.format(hand.capitalize()),
-                    [spell + ' (two handed)' if spell in two_handed_spell else spell for spell in spell_set]
+                    [spell + ' (two handed)' if spell.is_two_handed else spell for spell in spell_set]
                 )
                 final_spells_cast[hand] = selected_spell
-                if selected_spell in two_handed_spell:  # Both hands are casting same spell, so return
+                if selected_spell.is_two_handed:  # Both hands are casting same spell, so return
                     final_spells_cast = {hand: selected_spell for hand in glossary.HAND_NAMES}
                     break
             elif spell_set:
@@ -81,7 +82,7 @@ class Wizard(Entity):
         spells_cast_copy = spells_cast.copy()
         for hand, spell_set in spells_cast.items():
             for spell in spell_set:
-                if spell in two_handed_spell:
+                if spell.is_two_handed:
                     for _, hand_set in spells_cast_copy.items():
                         hand_set.add(spell)
 
