@@ -1,8 +1,9 @@
-from spell_tree import Tree, two_handed_spell
+from spell_tree import Tree
 from player_base import PlayerBase
 import glossary
 from wizard_turn import WizardTurn, SpellCast
 from entity import Entity
+from spell_library import SURRENDER
 
 
 class Wizard(Entity):
@@ -34,10 +35,10 @@ class Wizard(Entity):
 
         # Handle surrender
         surrender = False
-        if 'Surrender' in spells_cast[0]:
+        if SURRENDER in spells_cast[0]:
             surrender = True
             for spell_list in spells_cast:
-                spell_list.remove('Surrender')
+                spell_list.remove(SURRENDER)
 
         # Handle conflicts:
         final_spells_cast = []
@@ -45,7 +46,7 @@ class Wizard(Entity):
             if len(spell_list) > 1:
                 selected_spell = self.controlling_player.get_list_item(
                     '{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()),
-                    [spell + ' (two handed)' if spell in two_handed_spell else spell for spell in spell_list]
+                    [spell + ' (two handed)' if spell.is_two_handed else spell for spell in spell_list]
                 )
                 '''
                 self.controlling_player.print('{} hand has completed multiple spells. Choose one:'.format(glossary.HAND_NAMES[list_num].capitalize()))
@@ -56,7 +57,7 @@ class Wizard(Entity):
                 selection = int(self.controlling_player.get_input(""))
                 selected_spell = spell_list[selection-1]'''
                 final_spells_cast.append([selected_spell])
-                if selected_spell in two_handed_spell:  # Both hands are casting same spell, so return
+                if selected_spell.is_two_handed:  # Both hands are casting same spell, so return
                     final_spells_cast.append([selected_spell])
                     return final_spells_cast
             else:
@@ -72,7 +73,7 @@ class Wizard(Entity):
         # Handle two-handed spells. Add them to both hands:
         for num, spell_list in enumerate(spellscast):
             for spell in spell_list:
-                if spell in two_handed_spell and spell not in spellscast[len(spellscast)-1 - num]:
+                if spell.is_two_handed and spell not in spellscast[len(spellscast)-1 - num]:
                     spellscast[len(spellscast)-1 - num].append(spell)
 
         return spellscast

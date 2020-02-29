@@ -1,4 +1,3 @@
-from spell_tree import two_handed_spell
 import glossary
 from entity import Entity
 
@@ -25,7 +24,7 @@ class WizardTurn:
 
     def construct_spell_cast_list(self, spell_list, caster):
         spell_cast_list = []
-        if spell_list[0] and spell_list[0][0] in two_handed_spell:
+        if spell_list[0] and spell_list[0][0].is_two_handed:
             spell_cast_list.append(SpellCast(spell_list[0], 'both', caster))
         else:
             for num, spell in enumerate(spell_list):
