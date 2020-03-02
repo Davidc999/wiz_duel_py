@@ -1,4 +1,3 @@
-from spell_tree import two_handed_spell
 import glossary
 from entity import Entity
 
@@ -15,6 +14,10 @@ class SpellCast:
 
     def __str__(self):
         return '<spell: {}, hand: {}, caster: {}, target: {}>'.format(self.spell, self.hand, self.caster, self.target)
+
+    @property
+    def priority(self):
+        return self.spell.priority
 
 
 class WizardTurn:

@@ -90,13 +90,13 @@ class Wizard(Entity):
 
     def _validate_gestures(self, gestures):
         if gestures[0] != gestures[1] and gestures[0] == 'C':
-            print('Clapping with one hand amounts to nothing')
+            self.controlling_player.print('Clapping with one hand amounts to nothing')
             gestures[0] = '.'
         elif gestures[0] != gestures[1] and gestures[1] == 'C':
-            print('Clapping with one hand amounts to nothing')
+            self.controlling_player.print('Clapping with one hand amounts to nothing')
             gestures[1] = '.'
         elif gestures[0] == gestures[1] and gestures[0] == '>':
-            print('A wizard only has 1 dagger! Your right hand does nothing')
+            self.controlling_player.print('A wizard only has 1 dagger! Your right hand does nothing')
             gestures[1] = '.'
         elif gestures[0] == gestures[1]:
             gestures[0] = gestures[0].lower()

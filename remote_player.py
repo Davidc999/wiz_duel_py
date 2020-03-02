@@ -5,7 +5,7 @@ from player_base import PlayerBase
 class RemotePlayer(PlayerBase):
 
     def print(self, prompt):
-        msg = prompt
+        msg = prompt + "\\"
         self._conn.send(msg.encode())
 
     def get_input(self, prompt):
