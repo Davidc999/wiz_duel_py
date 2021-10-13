@@ -6,8 +6,18 @@ import time
 from wizard import Wizard
 from game_state import GameState
 from remote_player import RemotePlayer
+import argparse
 
 game_state = GameState()
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Start wizduel client and connect to server.")
+    parser.add_argument("-port", type=int, required=True,
+                        help="The port to listen on")
+    return parser.parse_args()
+
+
 def main():
     """The first argument AF_INET is the address domain of the
     socket. This is used when we have an Internet Domain with
@@ -17,23 +27,14 @@ def main():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    # checks whether sufficient arguments have been provided
-    if len(sys.argv) != 3:
-        print("Correct usage: script, IP address, port number")
-        exit()
-
-    # takes the first argument from command prompt as IP address
-    IP_address = str(sys.argv[1])
-
-    # takes second argument from command prompt as port number
-    Port = int(sys.argv[2])
+    args = parse_args()
 
     """ 
     binds the server to an entered IP address and at the 
     specified port number. 
     The client must be aware of these parameters 
     """
-    server.bind((IP_address, Port))
+    server.bind(("127.0.0.1", args.port))
 
     """ 
     listens for 100 active connections. This number can be 
@@ -51,7 +52,7 @@ def main():
     run_demo()
 
 
-        #start_new_thread(clientthread, (conn, addr))
+        #start_new_thread(client_listener_thread, (conn, addr))
 
     conn.close()
     server.close()
@@ -71,7 +72,7 @@ def run_demo():
 
 
 
-def clientthread(conn, addr):
+def client_listener_thread(conn, addr):
     # sends a message to the client whose user object is conn
     conn.send("Welcome to this chatroom!".encode())
 
